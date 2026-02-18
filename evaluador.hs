@@ -53,4 +53,5 @@ slog (Just x) (Just y)
     | (x<=0) = Nothing
     | (x==1) = Nothing
     | (y<=0) = Nothing
+    | otherwise = Just (logBase x y)
 slog _ _ = Nothing
