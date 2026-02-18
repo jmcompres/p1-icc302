@@ -1,22 +1,20 @@
 -- Modelo de datos para expresiones aritméticas.
-data Expr = Num Double
-          | Add Expr Expr
-          | Sub Expr Expr
-          | Mul Expr Expr
-          | Div Expr Expr
+data Expr a = Lit a                                -- Lit de literal (cambié de Num por si acaso, porque ya hay una clase Num)
+          | Add (Expr a) (Expr a)
+          | Sub (Expr a) (Expr a)
+          | Mul (Expr a) (Expr a)
+          | Div (Expr a) (Expr a)
+          | Exp (Expr a) (Expr a)
+          | Log (Expr a) (Expr a)
+          deriving (Show, Eq)
 
--- Ejemplo de expresión para probar.
-ejemplo1 :: Expr
-ejemplo1 = Add (Num 5) (Mul (Num 3) (Num 2))
+eval :: (Floating a) => Expr a -> a
+eval (Lit x) = x
+eval (Add e1 e2) = (eval e1) + (eval e2)
+eval (Sub e1 e2) = (eval e1) - (eval e2)
+eval (Mul e1 e2) = (eval e1) * (eval e2)
+eval (Div e1 e2) = (eval e1) / (eval e2)
+eval (Exp e1 e2) = (eval e1) ** (eval e2)          -- ** Es para elevar flotantes
+eval (Log e1 e2) = logBase (eval e1) (eval e2)
 
---ghci> eval ejemplo1
---Just 11.0
---ghci> ejemplo1
---Add (Num 5.0) (Mul (Num 3.0) (Num 2.0))
-
-ejemplo2 :: Expr
-ejemplo2 = Div (Num 10) (Num 0)
---ghci> eval ejemplo2
---Nothing
---ghci> ejemplo2     
---Div (Num 10.0) (Num 0.0)
+-- eval (Log (Div (Lit 90) (Mul (Exp (Lit 3) (Lit 2)) (Lit 5))) (Lit 8)) -> Ejemplo
