@@ -55,3 +55,10 @@ slog (Just x) (Just y)
     | (y<=0) = Nothing
     | otherwise = Just (logBase x y)
 slog _ _ = Nothing
+
+
+
+-- Función para mensajes
+evaluar :: (Show a) => Maybe a -> String
+evaluar (Just x) = "Resultado: "++(show x)
+evaluar Nothing = "Operacion matematica invalida"
