@@ -1,4 +1,4 @@
--- Modelo de datos para expresiones aritméticas.
+-- Modelo de datos para expresiones aritméticas (con tipo de dato genérico).
 data Expr a = Lit a                                -- Lit de literal (cambié de Num por si acaso, porque ya hay una clase Num)
           | Add (Expr a) (Expr a)
           | Sub (Expr a) (Expr a)
@@ -13,11 +13,11 @@ data Expr a = Lit a                                -- Lit de literal (cambié de
 -- Función de evaluación recursiva
 eval :: (Floating a, Eq a, Ord a) => Expr a -> Maybe a
 eval (Lit x) = Just x
-eval (Add e1 e2) = sadd (eval e1) (eval e2)
-eval (Sub e1 e2) = ssub (eval e1) (eval e2)
-eval (Mul e1 e2) = smul (eval e1) (eval e2)
+eval (Add e1 e2) = sopgen (+) (eval e1) (eval e2)
+eval (Sub e1 e2) = sopgen (-) (eval e1) (eval e2)
+eval (Mul e1 e2) = sopgen (*) (eval e1) (eval e2)
 eval (Div e1 e2) = sdiv (eval e1) (eval e2)
-eval (Pow e1 e2) = spow (eval e1) (eval e2)          -- ** Es para elevar flotantes
+eval (Pow e1 e2) = sopgen (**) (eval e1) (eval e2)          -- ** Es para elevar flotantes
 eval (Log e1 e2) = slog (eval e1) (eval e2)
 
 -- eval (Log (Div (Lit 90) (Mul (Pow (Lit 3) (Lit 2)) (Lit 5))) (Lit 8)) -> Ejemplo
@@ -27,26 +27,14 @@ eval (Log e1 e2) = slog (eval e1) (eval e2)
 -- Funciones auxiliares (no recursivas) para el manejo de errores (No se pueden sumar/restar/dividir/etc. dos justs en las eval)
 -- (s de safe)
 
-sadd :: (Floating a, Eq a, Ord a) => Maybe a -> Maybe a -> Maybe a
-sadd (Just x) (Just y) = Just (x+y)
-sadd _ _ = Nothing
-
-ssub :: (Floating a, Eq a, Ord a) => Maybe a -> Maybe a -> Maybe a
-ssub (Just x) (Just y) = Just (x-y)
-ssub _ _ = Nothing
-
-smul :: (Floating a, Eq a, Ord a) => Maybe a -> Maybe a -> Maybe a
-smul (Just x) (Just y) = Just (x*y)
-smul _ _ = Nothing
+sopgen :: (Floating a, Eq a, Ord a) => (a -> a -> a) -> Maybe a -> Maybe a -> Maybe a  -- safeOperacionGeneral (aquí se condensan suma, resta, multiplicación y pow, que tienen las mismas reglas para sus operaciones)
+sopgen oper (Just x) (Just y) = Just (oper x y)
+sopgen _ _ _ = Nothing
 
 sdiv :: (Floating a, Eq a, Ord a) => Maybe a -> Maybe a -> Maybe a
 sdiv (Just _) (Just 0) = Nothing
 sdiv (Just x) (Just y) = Just (x/y)
 sdiv _ _ = Nothing
-
-spow :: (Floating a, Eq a, Ord a) => Maybe a -> Maybe a -> Maybe a
-spow (Just x) (Just y) = Just (x**y)
-spow _ _ = Nothing
 
 slog :: (Floating a, Eq a, Ord a) => Maybe a -> Maybe a -> Maybe a
 slog (Just x) (Just y)
