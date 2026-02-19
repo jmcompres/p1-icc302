@@ -2,6 +2,9 @@
 ===============================================================================
 EVALUADOR DE EXPRESIONES ARITMETICAS
 ===============================================================================
+José Miguel Comprés - 1015
+María José Cruz - 10154963
+Almy Ventura - 10153712
 
 Descripcion general:
 
@@ -14,11 +17,6 @@ se detenga por excepciones en tiempo de ejecucion.
 Las operaciones invalidas (division por cero, logaritmos fuera de dominio,
 etc.) devuelven Nothing.
 -}
-
-
--- Se importa readMaybe para convertir texto en expresiones de forma segura.
--- Si el usuario escribe mal la expresion, no se rompe el programa.
-import Text.Read (readMaybe)
 
 
 -- DEFINICION DEL TIPO DE DATO
@@ -146,15 +144,23 @@ main = do
     loop
 
 -- Bucle interactivo
+-- 1) Muestra un mensaje para que el usuario escriba una expresion.
+-- 2) Lee la linea ingresada como String.
+-- 3) Si la linea esta vacia, termina el programa.
+-- 4) Si no esta vacia, intenta parsear la entrada con `reads` como `Expr Double`.
+--    - `[(expr, "")]` significa: parseo exitoso y sin texto sobrante.
+--    - cualquier otro caso significa error de sintaxis.
+-- 5) Si parsea bien, evalua la expresion y muestra el resultado.
+-- 6) Vuelve a llamarse a si misma para seguir pidiendo expresiones.
 loop :: IO ()
 loop = do
     putStrLn "\nIngresa una expresion:"
     input <- getLine
-    
+
     if null input
         then putStrLn "Saliendo del evaluador..."
         else do
-            case readMaybe input :: Maybe (Expr Double) of
-                Nothing -> putStrLn "Error de sintaxis en la expresion."
-                Just expr -> putStrLn (evaluar (eval expr))
+            case reads input :: [(Expr Double, String)] of
+                [(expr, "")] -> putStrLn (evaluar (eval expr))
+                _            -> putStrLn "Error de sintaxis en la expresion."
             loop
