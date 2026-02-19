@@ -2,7 +2,7 @@
 ===============================================================================
 EVALUADOR DE EXPRESIONES ARITMETICAS
 ===============================================================================
-José Miguel Comprés - 1015
+José Miguel Comprés - 10153259
 María José Cruz - 10154963
 Almy Ventura - 10153712
 
@@ -154,7 +154,7 @@ main = do
 -- 6) Vuelve a llamarse a si misma para seguir pidiendo expresiones.
 loop :: IO ()
 loop = do
-    putStrLn "\nIngresa una expresion:"
+    putStrLn "\nIngresa una expresion (sin espacios al final):"
     input <- getLine
 
     if null input
